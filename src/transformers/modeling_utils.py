@@ -399,8 +399,10 @@ def load_state_dict(checkpoint_file: Union[str, os.PathLike]):
     """
     if checkpoint_file.endswith(".safetensors") and is_safetensors_available():
         # Check format of the archive
-        with safe_open(checkpoint_file, framework="pt") as f:
+        with safe_open(checkpoint_file,framework = 'np') as f:
             metadata = f.metadata()
+        # with safe_open(checkpoint_file, framework="pt") as f:
+        #     metadata = f.metadata()
         if metadata.get("format") not in ["pt", "tf", "flax"]:
             raise OSError(
                 f"The safetensors archive passed at {checkpoint_file} does not contain the valid metadata. Make sure "
@@ -410,7 +412,13 @@ def load_state_dict(checkpoint_file: Union[str, os.PathLike]):
             raise NotImplementedError(
                 f"Conversion from a {metadata['format']} safetensors archive to PyTorch is not implemented yet."
             )
-        return safe_load_file(checkpoint_file)
+        from safetensors.numpy import load_file
+        np_data = load_file(checkpoint_file)
+        result = {}
+        for k in np_data.keys():
+            result[k] = torch.tensor(np_data[k])
+        return result
+        # return safe_load_file(checkpoint_file)
     try:
         return torch.load(checkpoint_file, map_location="cpu")
     except Exception as e:
