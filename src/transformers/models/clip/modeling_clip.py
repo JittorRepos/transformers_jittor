@@ -192,8 +192,6 @@ class CLIPVisionEmbeddings(nn.Module):
         self.register_buffer("position_ids", torch.arange(self.num_positions).unsqueeze(0))
 
     def forward(self, pixel_values: torch.FloatTensor) -> torch.Tensor:
-        # print(self.position_ids)
-        breakpoint()
         batch_size = pixel_values.shape[0]
         patch_embeds = self.patch_embedding(pixel_values)  # shape = [*, width, grid, grid]
         patch_embeds = patch_embeds.flatten(2).transpose(1, 2)
