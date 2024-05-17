@@ -1650,7 +1650,8 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMix
         # save the string version of dtype to the config, e.g. convert torch.float32 => "float32"
         # we currently don't use this setting automatically, but may start to use with v5
         dtype = get_parameter_dtype(model_to_save)
-        model_to_save.config.torch_dtype = str(dtype).split(".")[1]
+
+        model_to_save.config.torch_dtype = str(dtype)
 
         # Attach architecture to the config
         model_to_save.config.architectures = [model_to_save.__class__.__name__]
